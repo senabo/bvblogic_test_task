@@ -1,7 +1,6 @@
 from django.contrib.auth import get_user_model
 
 from rest_framework import generics
-from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import (
     AllowAny,
     IsAuthenticated,
@@ -19,7 +18,7 @@ User = get_user_model()
 class CreateProfileView(generics.CreateAPIView):
     """Create new user profile"""
 
-    queryset = UserProfile.objects.all()
+    queryset = User.objects.all()
     serializer_class = CreateProfileSerializer
     permission_classes = (AllowAny,)
 

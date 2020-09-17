@@ -17,6 +17,7 @@ class CreateProfileSerializer(serializers.ModelSerializer):
     """Serializer for creating user and user's profile"""
 
     profile = ProfileSerializer()
+
     email = serializers.EmailField(
         required=True,
         validators=[
@@ -35,17 +36,19 @@ class CreateProfileSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         profile_data = validated_data.pop("profile", "")
 
+        #creating user
         password = validated_data.pop("password")
         user = User(**validated_data)
         user.set_password(password)
         user.save()
 
+        #creating profile
         name = profile_data.get("name", "")
         about = profile_data.get("about", "")
         avatar = profile_data.get("avatar", "")
-        # user = User.objects.create(**validated_data)
 
         UserProfile.objects.create(user=user, name=name, about=about, avatar=avatar)
+
         return user
 
 
@@ -81,6 +84,7 @@ class UpdateProfileSerializer(serializers.ModelSerializer):
             msg = ('Must provide current password')
             raise serializers.ValidationError(msg, code='authorization')
 
+        # If current password's correct set new password
         if password and new_password:
             if instance.check_password(password):
                 instance.set_password(new_password)
@@ -89,9 +93,10 @@ class UpdateProfileSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError(msg, code='authorization')
 
         # Update profile fields
-        for field, value in profile_data.items():
-            if value:
-                setattr(profile, field, value)
+        if profile_data != None:
+            for field, value in profile_data.items():
+                if value:
+                    setattr(profile, field, value)
 
         # Update user fields
         for field, value in validated_data.items():

@@ -45,6 +45,11 @@ python manage.py makemigrations
 python manage.py migrate
 python manage.py createsuperuser
 ```
+
+You can launch test:
+
+`python manage.py test`
+
 ## Oauth2 Token Authentication
 Oauth2 endpoint: http://localhost:8000/api/v1/oauth2/
    

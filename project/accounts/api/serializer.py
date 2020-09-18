@@ -1,6 +1,8 @@
+from django.contrib.auth.models import User
+
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-from django.contrib.auth.models import User
+
 from accounts.models import UserProfile
 
 
@@ -81,7 +83,7 @@ class UpdateProfileSerializer(serializers.ModelSerializer):
         validated_data.pop('new_password', None)
 
         if not password and new_password:
-            msg = ('Must provide current password')
+            msg = 'Must provide current password'
             raise serializers.ValidationError(msg, code='authorization')
 
         # If current password's correct set new password
@@ -89,7 +91,7 @@ class UpdateProfileSerializer(serializers.ModelSerializer):
             if instance.check_password(password):
                 instance.set_password(new_password)
             else:
-                msg = ('Sorry, you entered wrong password')
+                msg = 'Sorry, you entered wrong password'
                 raise serializers.ValidationError(msg, code='authorization')
 
         # Update profile fields

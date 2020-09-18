@@ -36,12 +36,15 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.postgres",
+
     "oauth2_provider",
     "rest_framework",
     "rest_framework_swagger",
     "drf_yasg",
     'django_rest_passwordreset',
+
     "accounts",
+    "forum"
 ]
 
 MIDDLEWARE = [

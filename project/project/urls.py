@@ -20,6 +20,7 @@ urlpatterns = [
         include("django_rest_passwordreset.urls", namespace="password_reset"),
     ),
     path("api/v1/", include("accounts.api.urls")),
+    path("api/v1/", include("forum.api.urls"))
 ]
 
 # Generate swagger schema view

@@ -28,6 +28,7 @@ or
 First, we need to clone the repository:
 ```
 git clone https://github.com/senabo/bvblogic_test_task.git
+cd bvblogic_test_task
 ```
 You have to copy `.env.develop` as `.env` into `project/project/` 
 
@@ -50,7 +51,6 @@ Create postgresql database then change `.env` and comment POSTGRES_HOST (add # a
 Install all required dependencies in an isolated environment:
 
 ```
-cd bvblogic_test_task
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt

@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404
 
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import (
     ListCreateAPIView,
     RetrieveUpdateAPIView,
@@ -60,6 +61,11 @@ class CreateCommentView(ListCreateAPIView):
 
     def perform_create(self, serializer):
         topic = get_object_or_404(Topic, pk=self.kwargs.get("topic"))
+
+        if topic.closed:
+            msg = "The topic is closed"
+            raise PermissionDenied(msg)
+
         serializer.save(author=self.request.user, topic=topic)
 
 

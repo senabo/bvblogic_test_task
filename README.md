@@ -37,8 +37,8 @@ Application can be deployed with docker compose, so you need to run following co
 
 ```
 docker-compose build
-docker-compose ran web python manage.py makemigrations
-docker-compose ran web python manage.py migrate
+docker-compose run web python manage.py makemigrations
+docker-compose run web python manage.py migrate
 docker-compose run web python manage.py createsuperuser
 docker-compose run web python manage.py test
 docker-compose up

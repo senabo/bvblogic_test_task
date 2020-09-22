@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 
+from accounts.models import UserProfile
+
 User = get_user_model()
 
 COMMENT_STATUS_OPTIONS = (
@@ -16,6 +18,13 @@ class Topic(models.Model):
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="topic_author"
     )
+    moderator = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        related_name="topic_moderator",
+        blank=True,
+        null=True,
+    )
     title = models.CharField(max_length=120)
     description = models.TextField(blank=True, null=True)
     image = models.ImageField(null=True, blank=True)
@@ -29,6 +38,12 @@ class Topic(models.Model):
 
     def __str__(self):
         return self.title
+
+    def set_user_as_moderator(self, user):
+        user_profile = UserProfile.objects.get(user=user)
+        user_profile.set_user_as_moderator()
+        self.moderator = user
+        self.save()
 
 
 class Comment(models.Model):

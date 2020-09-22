@@ -1,6 +1,10 @@
+from django.contrib.auth import get_user_model
+
 from rest_framework import serializers
 
 from forum.models import Topic, Comment
+
+User = get_user_model()
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -18,6 +22,7 @@ class TopicSerializer(serializers.ModelSerializer):
     """Serializer for crud Topic"""
 
     author = serializers.SlugRelatedField(slug_field="username", read_only=True)
+    moderator = serializers.SlugRelatedField(slug_field="username", read_only=True)
     comment_set = CommentSerializer(many=True, read_only=True)
 
     updated = serializers.DateTimeField(read_only=True)
@@ -30,6 +35,7 @@ class TopicSerializer(serializers.ModelSerializer):
             "description",
             "image",
             "author",
+            "moderator",
             "created",
             "updated",
             "is_active",
@@ -74,4 +80,17 @@ class DeleteCommentSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         instance.delete_comment()
         instance.save()
+        return instance
+
+
+class AttachModeratorSerializer(serializers.ModelSerializer):
+    """Serializer for attaching user to topic as moderator"""
+
+    class Meta:
+        model = Topic
+        fields = ("moderator",)
+
+    def update(self, instance, validated_data):
+        moderator = User.objects.get(username=validated_data.get("moderator"))
+        instance.set_user_as_moderator(moderator)
         return instance

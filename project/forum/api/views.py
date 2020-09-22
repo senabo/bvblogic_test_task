@@ -1,5 +1,6 @@
 from django.shortcuts import get_object_or_404
 
+from rest_framework import filters
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import (
@@ -25,19 +26,30 @@ from .serializer import (
 
 
 class ListTopicView(ListCreateAPIView):
-    """List or create topics"""
+    """
+    List or create topics.
+
+    Possibility search the topics by title: just add "?search=" parameter at the end of the url
+    """
 
     queryset = Topic.objects.filter(is_active=True)
 
     serializer_class = TopicSerializer
     permission_classes = (IsOwnerOrReadOnly, IsAuthenticatedOrReadOnly)
 
+    filter_backends = [filters.SearchFilter]
+    search_fields = ["title"]
+
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
 
 class EditTopicView(ModelViewSet):
-    """List only login user topics. You can create, update and delete your topic"""
+    """
+    Get only login user topics.
+
+    You can create, update and delete your topic
+    """
 
     serializer_class = TopicSerializer
     permission_classes = (IsAuthenticated,)
@@ -78,7 +90,11 @@ class EditCommentView(RetrieveUpdateAPIView):
 
 
 class DeleteCommentView(UpdateAPIView):
-    """Delete comment. You have to send an empty put request)"""
+    """
+    Delete comment.
+
+    You have to send an empty put request
+    """
 
     permission_classes = (IsOwnerOrReadOnly,)
     serializer_class = DeleteCommentSerializer

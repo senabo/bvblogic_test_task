@@ -2,24 +2,22 @@ from django.urls import path
 
 from .views import (
     ListTopicView,
+    ListUserTopicsView,
     EditTopicView,
+    DeleteTopicView,
     CreateCommentView,
     EditCommentView,
     DeleteCommentView,
+    AttachModeratorView,
 )
 
 app_name = "forum"
 
-own_topic_list = EditTopicView.as_view({"get": "list", "post": "create"})
-own_topic_edit = EditTopicView.as_view(
-    {"get": "retrieve", "put": "update", "delete": "destroy"}
-)
-
-
 urlpatterns = [
     path("topics/", ListTopicView.as_view(), name="list_create_topics"),
-    path("topics/my/", own_topic_list, name="list_create_own_topics"),
-    path("topics/my/<int:pk>/", own_topic_edit, name="get_update_topic"),
+    path("topics/my/", ListUserTopicsView.as_view(), name="list_create_own_topics"),
+    path("topics/<int:pk>/edit/", EditTopicView.as_view(), name="get_update_topic"),
+    path("topics/<int:pk>/delete/", DeleteTopicView.as_view(), name="delete_topic"),
     path(
         "topics/<int:topic>/comments/",
         CreateCommentView.as_view(),
@@ -31,4 +29,6 @@ urlpatterns = [
         DeleteCommentView.as_view(),
         name="delete_comment",
     ),
+    path("topics/<int:pk>/moderator/", AttachModeratorView.as_view(), name="attaching_moderator"),
+
 ]

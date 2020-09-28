@@ -38,13 +38,13 @@ class CreateProfileSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         profile_data = validated_data.pop("profile", "")
 
-        #creating user
+        # creating user
         password = validated_data.pop("password")
         user = User(**validated_data)
         user.set_password(password)
         user.save()
 
-        #creating profile
+        # creating profile
         name = profile_data.get("name", "")
         about = profile_data.get("about", "")
         avatar = profile_data.get("avatar", "")
@@ -77,25 +77,25 @@ class UpdateProfileSerializer(serializers.ModelSerializer):
         profile_data = validated_data.pop("profile", None)
         profile = instance.profile
 
-        password = validated_data.get('current_password')
-        new_password = validated_data.get('new_password')
-        validated_data.pop('current_password', None)
-        validated_data.pop('new_password', None)
+        password = validated_data.get("current_password")
+        new_password = validated_data.get("new_password")
+        validated_data.pop("current_password", None)
+        validated_data.pop("new_password", None)
 
         if not password and new_password:
-            msg = 'Must provide current password'
-            raise serializers.ValidationError(msg, code='authorization')
+            msg = "Must provide current password"
+            raise serializers.ValidationError(msg, code="authorization")
 
         # If current password's correct set new password
         if password and new_password:
             if instance.check_password(password):
                 instance.set_password(new_password)
             else:
-                msg = 'Sorry, you entered wrong password'
-                raise serializers.ValidationError(msg, code='authorization')
+                msg = "Sorry, you entered wrong password"
+                raise serializers.ValidationError(msg, code="authorization")
 
         # Update profile fields
-        if profile_data != None:
+        if profile_data is not None:
             for field, value in profile_data.items():
                 if value:
                     setattr(profile, field, value)

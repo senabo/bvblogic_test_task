@@ -4,6 +4,7 @@
 This is REST API backend for forum like Reddit etc.
 
 > Regular user:
+>
 * Can authenticate on the platform via login & password
   
 * Can authenticate on the platform via oauth2
@@ -21,9 +22,18 @@ This is REST API backend for forum like Reddit etc.
 * Can leave comments
 
 * Can modify\delete comments (others should know about changes/deletion) 
+ 
+ * Can search other topics 
+
+>Moderator:
+
+* Inherits possibilities of regular user
+
+* Can be attached to topic as moderator by admin
+
+* Can modify\close topic which he is responsible of
 
 
-or
 ## Installation
 First, we need to clone the repository:
 ```

@@ -1,11 +1,12 @@
 from django.shortcuts import get_object_or_404
 
-from rest_framework.viewsets import ModelViewSet
+from rest_framework import filters
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import (
     ListCreateAPIView,
     RetrieveUpdateAPIView,
     UpdateAPIView,
+    DestroyAPIView,
 )
 from rest_framework.permissions import (
     AllowAny,
@@ -15,29 +16,37 @@ from rest_framework.permissions import (
 )
 
 from forum.models import Comment, Topic
-from .permissions import IsOwnerOrReadOnly
+from .permissions import IsOwnerOrReadOnly, IsModeratorOrOwner
 from .serializer import (
     TopicSerializer,
     CommentSerializer,
     CommentEditSerializer,
     DeleteCommentSerializer,
+    AttachModeratorSerializer,
 )
 
 
 class ListTopicView(ListCreateAPIView):
-    """List or create topics"""
+    """
+    List or create topics.
+
+    Possibility search the topics by title: just add "?search=" parameter at the end of the url
+    """
 
     queryset = Topic.objects.filter(is_active=True)
 
     serializer_class = TopicSerializer
     permission_classes = (IsOwnerOrReadOnly, IsAuthenticatedOrReadOnly)
 
+    filter_backends = [filters.SearchFilter]
+    search_fields = ["title"]
+
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
 
-class EditTopicView(ModelViewSet):
-    """List only login user topics. You can create, update and delete your topic"""
+class ListUserTopicsView(ListCreateAPIView):
+    """Get only login user topics. Can create new topic"""
 
     serializer_class = TopicSerializer
     permission_classes = (IsAuthenticated,)
@@ -48,6 +57,24 @@ class EditTopicView(ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+
+
+class EditTopicView(RetrieveUpdateAPIView):
+    """
+    You can get and update topic if you are owner or moderator
+    """
+
+    serializer_class = TopicSerializer
+    permission_classes = (IsModeratorOrOwner,)
+    queryset = Topic.objects.all()
+
+
+class DeleteTopicView(DestroyAPIView):
+    """Delete your topic"""
+
+    serializer_class = TopicSerializer
+    permission_classes = (IsOwnerOrReadOnly,)
+    queryset = Topic.objects.all()
 
 
 class CreateCommentView(ListCreateAPIView):
@@ -78,8 +105,20 @@ class EditCommentView(RetrieveUpdateAPIView):
 
 
 class DeleteCommentView(UpdateAPIView):
-    """Delete comment. You have to send an empty put request)"""
+    """
+    Delete comment.
+
+    You have to send an empty put request
+    """
 
     permission_classes = (IsOwnerOrReadOnly,)
     serializer_class = DeleteCommentSerializer
     queryset = Comment.objects.all()
+
+
+class AttachModeratorView(UpdateAPIView):
+    """Attaching user to topic as moderator """
+
+    permission_classes = (IsAdminUser,)
+    serializer_class = AttachModeratorSerializer
+    queryset = Topic.objects.all()
